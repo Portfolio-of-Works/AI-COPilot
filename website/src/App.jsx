@@ -2,66 +2,75 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
-  // State to store the chat history
+  // Store the conversation history
   const [messages, setMessages] = useState([
-    { role: 'assistant', text: '你好！我是智审 Co-pilot。请问有什么审计准则或实务问题我可以帮您解答？' }
-  ]);
-  
-  // State to store the current text in the input box
-  const [inputText, setInputText] = useState('');
+    { sender: 'bot', text: '你好！我是智审 Co-pilot。请问有什么审计准则或实务问题我可以帮您解答？' }
+  ])
+  const [inputText, setInputText] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Function to handle sending a message
-  const handleSend = () => {
-    if (inputText.trim() === '') return;
+  const handleSendMessage = async (e) => {
+    e.preventDefault()
+    if (!inputText.trim()) return
 
-    // 1. Instantly display the user's message
-    const newMessages = [...messages, { role: 'user', text: inputText }];
-    setMessages(newMessages);
-    setInputText('');
+    // 1. Add user's message to the screen immediately
+    const userMessage = { sender: 'user', text: inputText }
+    setMessages(prev => [...prev, userMessage])
+    setInputText('')
+    setIsLoading(true)
 
-    // 2. Simulate the AI responding (Will connect to Python later)
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        text: '这是一个模拟回复。当后端连接后，这里将显示来自 Dialogflow 检索到的真实审计准则。' 
-      }]);
-    }, 1000);
-  };
+    try {
+      // 2. THE HANDSHAKE: Send the message to your Python Backend
+      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: userMessage.text })
+      })
 
-  // Allow sending by pressing the "Enter" key
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSend();
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+
+      // 3. Add the Python server's reply to the screen
+      setMessages(prev => [...prev, { sender: 'bot', text: data.reply }])
+
+    } catch (error) {
+      console.error('Error connecting to backend:', error)
+      setMessages(prev => [...prev, { sender: 'bot', text: '【连接错误】无法连接到本地服务器，请确保 Python 后端正在运行。' }])
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="chat-container">
-      {/* Chat History Area */}
-      <div className="messages-area">
+      <header className="chat-header">
+        <h1>智审 Co-pilot</h1>
+      </header>
+      
+      <div className="chat-history">
         {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.role}`}>
-            <strong>{msg.role === 'user' ? 'You: ' : '智审 Co-pilot: '}</strong>
-            <br />
+          <div key={index} className={`message-bubble ${msg.sender}`}>
             {msg.text}
           </div>
         ))}
+        {isLoading && <div className="message-bubble bot">正在思考中...</div>}
       </div>
 
-      {/* Input Area */}
-      <div className="input-area">
+      <form className="chat-input-area" onSubmit={handleSendMessage}>
         <input 
           type="text" 
-          className="chat-input"
-          placeholder="例如：请解释新租赁准则下承租人会计处理..." 
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={handleKeyPress}
+          placeholder="例如：请解释新租赁准则下承租人会计处理..." 
+          disabled={isLoading}
         />
-        <button className="send-button" onClick={handleSend}>
-          发送
-        </button>
-      </div>
+        <button type="submit" disabled={isLoading}>发送</button>
+      </form>
     </div>
   )
 }
