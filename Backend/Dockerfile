@@ -14,5 +14,7 @@ COPY . .
 # Expose the port that Cloud Run expects (8080)
 EXPOSE 8080
 
+ENV GOOGLE_APPLICATION_CREDENTIALS="/app/google_creds.json"
+
 # Command to run the FastAPI server
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

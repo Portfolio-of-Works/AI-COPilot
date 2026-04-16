@@ -8,3 +8,5 @@ __pycache__/
 
 # Ignore environment variables (secrets)
 .env
+
+google_creds.json
