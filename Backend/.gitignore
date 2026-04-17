@@ -10,3 +10,4 @@ __pycache__/
 .env
 
 google_creds.json
+.env
