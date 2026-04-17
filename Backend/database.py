@@ -23,7 +23,11 @@ if not DB_PASS or not DB_HOST:
 safe_pass = urllib.parse.quote_plus(DB_PASS) if DB_PASS else ""
 
 # 3. This builds the connection string
-DATABASE_URL = f"postgresql://{DB_USER}:{safe_pass}@{DB_HOST}:5432/{DB_NAME}"
+if DB_HOST and DB_HOST.startswith("/cloudsql"):
+    DATABASE_URL = f"postgresql://{DB_USER}:{safe_pass}@/{DB_NAME}?host={DB_HOST}"
+else:
+    # Standard connection for local testing
+    DATABASE_URL = f"postgresql://{DB_USER}:{safe_pass}@{DB_HOST}:5432/{DB_NAME}"
 
 # 1. Start the Database Engine
 engine = create_engine(DATABASE_URL)
