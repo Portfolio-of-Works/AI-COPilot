@@ -112,9 +112,9 @@ async def internet_search_tool(request: InternetSearchRequest):
         
         # 2. Tell the model to use Google Search
         
-        search_tool = Tool(
-            google_search=grounding.GoogleSearch()
-        )
+        search_tool = Tool.from_dict({
+            "google_search": {} 
+        })
         
         # 3. Load Gemini 2.5 Flash
         model = GenerativeModel("gemini-2.5-flash")
