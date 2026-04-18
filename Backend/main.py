@@ -108,6 +108,7 @@ async def internet_search_tool(request: InternetSearchRequest):
     user_query = request.query
     
     try:
+        print(f"Playbook requested internet search for: {user_query}")
         response = model.generate_content(
             f"Search and define: {user_query}",
             tools=[search_tool],
