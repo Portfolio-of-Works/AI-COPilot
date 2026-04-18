@@ -119,7 +119,7 @@ def internet_search_tool(request: InternetSearchRequest):
             contents=f"Using Google Search, provide a complete and factual answer to the following query. Output the answer entirely in Simplified Chinese. Do not use conversational filler or greetings. Query: {user_query}",
             config=GenerateContentConfig(
                 temperature=0.2,
-                max_output_tokens=300,
+                #max_output_tokens=300,
                 tools=[
                     Tool(
                         google_search=GoogleSearch()
