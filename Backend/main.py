@@ -101,7 +101,7 @@ class InternetSearchResponse(BaseModel):
 
 vertexai.init(project="copilot-493106", location="us-central1")
 search_tool = Tool.from_dict({"google_search": {}})
-model = GenerativeModel("gemini-1.5-flash")
+model = GenerativeModel("gemini-1.5-flash-002")
 
 # Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
@@ -114,12 +114,11 @@ def internet_search_tool(request: InternetSearchRequest):
             f"Provide a one-sentence summary for: {user_query}",
             tools=[search_tool],
             generation_config={"temperature": 0.0,
-                               "max_output_tokens": 300,
+                               "max_output_tokens": 200,
                                "top_p": 1},
             
         )
         return InternetSearchResponse(search_result=response.text)
         
-        return InternetSearchResponse(search_result=final_answer)
     except Exception as e:
         return InternetSearchResponse(search_result="Search timed out.")
