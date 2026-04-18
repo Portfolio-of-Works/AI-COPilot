@@ -122,7 +122,9 @@ async def internet_search_tool(request: InternetSearchRequest):
         response = model.generate_content(
             prompt,
             tools=[search_tool],
-            temperature=0.0 # Keep it factual
+            generation_config={
+                "temperature": 0.0,
+            }
         )
         
         # Extract the text from the response
