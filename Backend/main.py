@@ -116,7 +116,7 @@ def internet_search_tool(request: InternetSearchRequest):
         
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
-            contents=f"Strictly one sentence definition for: {user_query}",
+            contents=f"Provide definition for: {user_query}",
             config=GenerateContentConfig(
                 temperature=0.0,
                 max_output_tokens=150,
