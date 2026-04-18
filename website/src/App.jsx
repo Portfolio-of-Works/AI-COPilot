@@ -40,7 +40,7 @@ function App() {
 
     } catch (error) {
       console.error('Error connecting to backend:', error)
-      setMessages(prev => [...prev, { sender: 'bot', text: '【连接错误】无法连接到本地服务器，请确保 Python 后端正在运行。' }])
+      setMessages(prev => [...prev, { sender: 'bot', text: '【系统提示】网络连接异常或云端服务器响应失败，请稍后重试。' }])
     } finally {
       setIsLoading(false)
     }

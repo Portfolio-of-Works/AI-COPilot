@@ -43,3 +43,9 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/backend-image:latest
           flags: '--allow-unauthenticated'
+          # ADD THESE LINES to set the variables during deployment
+          env_vars: |
+            DB_USER=postgres
+            DB_PASS=${{ secrets.DB_PASS }}
+            DB_HOST=/cloudsql/copilot-493106:us-west2:copilot-db
+            DB_NAME=postgres
