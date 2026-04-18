@@ -105,16 +105,17 @@ model = GenerativeModel("gemini-1.5-flash")
 
 # Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
-async def internet_search_tool(request: InternetSearchRequest):
+def internet_search_tool(request: InternetSearchRequest):
     user_query = request.query
     
     try:
         print(f"Playbook requested internet search for: {user_query}")
         response = model.generate_content(
-            f"Answer briefly using Google Search: {user_query}",
+            f"Provide a one-sentence summary for: {user_query}",
             tools=[search_tool],
             generation_config={"temperature": 0.0,
-                               "max_output_tokens": 400,},
+                               "max_output_tokens": 300,
+                               "top_p": 1},
             
         )
         return InternetSearchResponse(search_result=response.text)
