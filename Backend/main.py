@@ -48,7 +48,7 @@ class ChatMessage(BaseModel):
 
 # DIALOGFLOW CONFIGURATION
 PROJECT_ID = "copilot-493106" 
-LOCATION = "us-central1"           
+LOCATION = "global"           
 AGENT_ID = "9bf63739-2aa0-4b65-9d6d-3ceef70bff7c"
 
 @app.get("/")
