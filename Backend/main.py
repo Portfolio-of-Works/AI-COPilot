@@ -112,8 +112,8 @@ async def internet_search_tool(request: InternetSearchRequest):
         
         # 2. Tell the model to use Google Search
         
-        search_tool = Tool.from_google_search_retrieval(
-            google_search_retrieval=grounding.GoogleSearchRetrieval()
+        search_tool = Tool(
+            google_search=grounding.GoogleSearch()
         )
         
         # 3. Load Gemini 2.5 Flash
