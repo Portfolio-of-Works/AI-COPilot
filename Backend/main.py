@@ -99,7 +99,11 @@ class InternetSearchRequest(BaseModel):
 class InternetSearchResponse(BaseModel):
     search_result: str = Field(..., description="The summary of the internet search results.")
 
-client = genai.Client()
+client = genai.Client(
+    vertexai=True, 
+    project="copilot-493106", 
+    location="us-central1"
+)
 
 # Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
