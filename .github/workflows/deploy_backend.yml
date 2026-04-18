@@ -9,8 +9,8 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}               
-  REGION: us-west2               #Cloud Run service
-  SERVICE_NAME: ai-copilot-backend
+  REGION: us-central1               #Cloud Run service
+  SERVICE_NAME: copilot-backend
   REPO_NAME: ai-copilot-repo
 
 jobs:
