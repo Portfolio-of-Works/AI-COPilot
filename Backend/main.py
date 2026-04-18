@@ -111,7 +111,7 @@ async def internet_search_tool(request: InternetSearchRequest):
         vertexai.init(project="copilot-493106", location="us-central1") 
         
         # 2. Tell the model to use Google Search
-        search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
+        search_tool = Tool.from_google_search(google_search=grounding.GoogleSearch())
         
         # 3. Load Gemini 2.5 Flash
         model = GenerativeModel("gemini-2.5-flash")
