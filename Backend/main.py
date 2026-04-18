@@ -5,6 +5,9 @@ import uuid
 import os
 from google.cloud import dialogflowcx_v3 as dialogflow
 from google.api_core.client_options import ClientOptions
+import vertexai
+from vertexai.generative_models import GenerativeModel, Tool, grounding
+from pydantic import Field
 
 # --- DATABASE IMPORTS ---
 from sqlalchemy.orm import Session
@@ -71,3 +74,46 @@ async def chat_with_agent(message: ChatMessage, db: Session = Depends(get_db)):
         print(f"Error: {e}")
         # If Dialogflow or DB fails, we still want to know why
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+    
+# 1. Define the Tool Request Schema
+class InternetSearchRequest(BaseModel):
+    query: str = Field(..., description="The accounting concept or rule to search for on the internet, e.g., '什么是固定资产折旧'")
+
+# 2. Define the Tool Response Schema
+class InternetSearchResponse(BaseModel):
+    search_result: str = Field(..., description="The summary of the internet search results.")
+
+# 3. Create the Tool Endpoint
+@app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
+async def internet_search_tool(request: InternetSearchRequest):
+    user_query = request.query
+    
+    try:
+        print(f"Playbook requested internet search for: {user_query}")
+        
+        # 1. Initialize Vertex AI (Using your specific project ID)
+        # Note: 'us-central1' is highly recommended for search grounding features
+        vertexai.init(project="copilot-493106", location="us-central1") 
+        
+        # 2. Tell the model to use Google Search
+        search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
+        
+        # 3. Load Gemini 2.5 Flash
+        model = GenerativeModel("gemini-2.5-flash")
+        
+        # 4. Ask Gemini to search for the user's query
+        prompt = f"You are an expert auditor. Search the internet and provide a professional, concise definition for this concept: {user_query}"
+        
+        response = model.generate_content(
+            prompt,
+            tools=[search_tool],
+            temperature=0.0 # Keep it factual
+        )
+        
+        # Extract the text from the response
+        final_answer = response.text
+        
+        return InternetSearchResponse(search_result=final_answer)
+    except Exception as e:
+        print(f"Search Tool Error: {e}")
+        return InternetSearchResponse(search_result="抱歉，在调用外部互联网搜索时发生错误。")
