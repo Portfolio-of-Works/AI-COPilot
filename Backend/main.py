@@ -20,7 +20,7 @@ if os.path.exists("google_creds.json"):
 
 app = FastAPI(
     title="AI Co-pilot API",
-    servers=[{"url": "https://ai-copilot-backend-1027738760886.us-west2.run.app"}]
+    servers=[{"url": "https://copilot-backend-1027738760886.us-central1.run.app"}]
 )
 
 # --- 2. Force OpenAPI 3.0.0 for Dialogflow ---
@@ -48,14 +48,14 @@ class ChatMessage(BaseModel):
 
 # --- DIALOGFLOW CONFIGURATION ---
 PROJECT_ID = "copilot-493106" 
-LOCATION = "global"           
+LOCATION = "us-central1"           
 AGENT_ID = "9bf63739-2aa0-4b65-9d6d-3ceef70bff7c"
 
 @app.get("/")
 async def health_check():
     return {"status": "success", "message": "AI Co-pilot Backend is running!"}
 
-client_options = ClientOptions(api_endpoint="dialogflow.googleapis.com")
+client_options = ClientOptions(api_endpoint="us-central1-dialogflow.googleapis.com")
 session_client = dialogflow.SessionsClient(client_options=client_options)
 
 @app.post("/api/chat")
