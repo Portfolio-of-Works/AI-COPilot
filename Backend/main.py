@@ -116,7 +116,7 @@ def internet_search_tool(request: InternetSearchRequest):
         
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
-            contents=f"Provide definition for: {user_query}",
+            contents=f"You are an expert auditor. Search the internet and provide a professional, concise definition for this concept: {user_query}",
             config=GenerateContentConfig(
                 temperature=0.0,
                 max_output_tokens=150,
