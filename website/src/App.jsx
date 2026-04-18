@@ -13,15 +13,15 @@ function App() {
     e.preventDefault()
     if (!inputText.trim()) return
 
-    // 1. Add user's message to the screen immediately
+    // Add user's message to the screen immediately
     const userMessage = { sender: 'user', text: inputText }
     setMessages(prev => [...prev, userMessage])
     setInputText('')
     setIsLoading(true)
 
     try {
-      // 2. THE HANDSHAKE: Send the message to your Python Backend
-      const response = await fetch('https://copilot-backend-1027738760886.us-central1.run.app/api/chat', { // https://ai-copilot-backend-1027738760886.us-west2.run.app/api/chat  http://127.0.0.1:8000/api/chat
+      // THE HANDSHAKE: Send the message to your Python Backend
+      const response = await fetch('https://copilot-backend-1027738760886.us-central1.run.app/api/chat', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ function App() {
 
       const data = await response.json()
 
-      // 3. Add the Python server's reply to the screen
+      // Add the Python server's reply to the screen
       setMessages(prev => [...prev, { sender: 'bot', text: data.reply }])
 
     } catch (error) {
