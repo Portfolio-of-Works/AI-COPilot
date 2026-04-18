@@ -114,12 +114,11 @@ async def internet_search_tool(request: InternetSearchRequest):
             f"Search and define: {user_query}",
             tools=[search_tool],
             generation_config={"temperature": 0.0,
-                               "max_output_tokens": 300,},
+                               "max_output_tokens": 400,},
             
         )
         return InternetSearchResponse(search_result=response.text)
         
         return InternetSearchResponse(search_result=final_answer)
     except Exception as e:
-        print(f"Search Tool Error: {e}")
-        return InternetSearchResponse(search_result="抱歉，在调用外部互联网搜索时发生错误。")
+        return InternetSearchResponse(search_result="Search timed out.")
