@@ -93,7 +93,7 @@ async def internet_search_tool(request: InternetSearchRequest):
         
         # 1. Initialize Vertex AI (Using your specific project ID)
         # Note: 'us-central1' is highly recommended for search grounding features
-        vertexai.init(project="copilot-493106", location="us-central1") 
+        vertexai.init(project="copilot-493106", location="global") 
         
         # 2. Tell the model to use Google Search
         search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
