@@ -98,40 +98,22 @@ class InternetSearchRequest(BaseModel):
 class InternetSearchResponse(BaseModel):
     search_result: str = Field(..., description="The summary of the internet search results.")
 
+vertexai.init(project="copilot-493106", location="us-central1")
+search_tool = Tool.from_dict({"google_search": {}})
+model = GenerativeModel("gemini-2.5-flash")
+
 # 3. Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
 async def internet_search_tool(request: InternetSearchRequest):
     user_query = request.query
     
     try:
-        print(f"Playbook requested internet search for: {user_query}")
-        
-        # 1. Initialize Vertex AI (Using your specific project ID)
-        # Note: 'us-central1' is highly recommended for search grounding features
-        vertexai.init(project="copilot-493106", location="us-central1") 
-        
-        # 2. Tell the model to use Google Search
-        
-        search_tool = Tool.from_dict({
-            "google_search": {} 
-        })
-        
-        # 3. Load Gemini 2.5 Flash
-        model = GenerativeModel("gemini-2.5-flash")
-        
-        # 4. Ask Gemini to search for the user's query
-        prompt = f"You are an expert auditor. Search the internet and provide a professional, concise definition for this concept: {user_query}"
-        
         response = model.generate_content(
-            prompt,
+            f"Search and define: {user_query}",
             tools=[search_tool],
-            generation_config={
-                "temperature": 0.0,
-            }
+            generation_config={"temperature": 0.0}
         )
-        
-        # Extract the text from the response
-        final_answer = response.text
+        return InternetSearchResponse(search_result=response.text)
         
         return InternetSearchResponse(search_result=final_answer)
     except Exception as e:
