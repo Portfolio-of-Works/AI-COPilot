@@ -116,10 +116,10 @@ def internet_search_tool(request: InternetSearchRequest):
         
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
-            contents=f"请使用互联网搜索，简明扼要地解释以下概念或回答该问题，不需要任何客套话： {user_query}",
+            contents=f"Using Google Search, provide a complete and factual answer to the following query. Output the answer entirely in Simplified Chinese. Do not use conversational filler or greetings. Query: {user_query}",
             config=GenerateContentConfig(
-                temperature=0.0,
-                max_output_tokens=150,
+                temperature=0.2,
+                max_output_tokens=300,
                 tools=[
                     Tool(
                         google_search=GoogleSearch()
