@@ -101,7 +101,7 @@ class InternetSearchResponse(BaseModel):
 
 vertexai.init(project="copilot-493106", location="us-central1")
 search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
-model = GenerativeModel("gemini-1.5-flash-002")
+model = GenerativeModel("gemini-1.5-flash")
 
 # Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
