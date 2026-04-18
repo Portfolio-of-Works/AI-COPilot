@@ -100,7 +100,7 @@ class InternetSearchResponse(BaseModel):
     search_result: str = Field(..., description="The summary of the internet search results.")
 
 vertexai.init(project="copilot-493106", location="us-central1")
-search_tool = Tool.from_dict({"google_search": {}})
+search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
 model = GenerativeModel("gemini-1.5-flash-002")
 
 # Create the Tool Endpoint
@@ -121,4 +121,6 @@ def internet_search_tool(request: InternetSearchRequest):
         return InternetSearchResponse(search_result=response.text)
         
     except Exception as e:
-        return InternetSearchResponse(search_result="Search timed out.")
+        error_msg = f"CRITICAL VERTEX ERROR: {str(e)}"
+        print(error_msg) 
+        return InternetSearchResponse(search_result=error_msg)
