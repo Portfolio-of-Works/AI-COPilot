@@ -55,12 +55,13 @@ AGENT_ID = "9bf63739-2aa0-4b65-9d6d-3ceef70bff7c"
 async def health_check():
     return {"status": "success", "message": "AI Co-pilot Backend is running!"}
 
+client_options = ClientOptions(api_endpoint="dialogflow.googleapis.com")
+session_client = dialogflow.SessionsClient(client_options=client_options)
+
 @app.post("/api/chat")
 async def chat_with_agent(message: ChatMessage, db: Session = Depends(get_db)):
     try:
         # 1. DIALOGFLOW CONNECTION
-        client_options = ClientOptions(api_endpoint="dialogflow.googleapis.com")
-        session_client = dialogflow.SessionsClient(client_options=client_options)
         session_path = f"projects/{PROJECT_ID}/locations/{LOCATION}/agents/{AGENT_ID}/sessions/{message.session_id}"
 
         text_input = dialogflow.TextInput(text=message.text)
@@ -77,8 +78,8 @@ async def chat_with_agent(message: ChatMessage, db: Session = Depends(get_db)):
             user_message=message.text,
             ai_response=ai_reply
         )
-        db.add(new_record)
-        db.commit() # This officially saves it to the cloud!
+        #db.add(new_record)
+        #db.commit() # This officially saves it to the cloud!
 
         return {
             "reply": ai_reply,
