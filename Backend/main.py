@@ -8,6 +8,7 @@ from google.api_core.client_options import ClientOptions
 import vertexai
 from vertexai.generative_models import GenerativeModel, Tool, grounding
 from pydantic import Field
+from fastapi.openapi.utils import get_openapi
 
 # --- DATABASE IMPORTS ---
 from sqlalchemy.orm import Session
@@ -17,7 +18,21 @@ from database import get_db, ChatHistory
 if os.path.exists("google_creds.json"):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_creds.json"
 
-app = FastAPI(title="AI Co-pilot API")
+app = FastAPI(
+    title="AI Co-pilot API",
+    servers=[{"url": "https://ai-copilot-backend-1027738760886.us-west2.run.app"}]
+)
+
+# --- 2. Force OpenAPI 3.0.0 for Dialogflow ---
+def custom_openapi():
+    if app.openapi_schema: return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=app.title, version=app.version, routes=app.routes, servers=app.servers
+    )
+    openapi_schema["openapi"] = "3.0.0" 
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+app.openapi = custom_openapi
 
 app.add_middleware(
     CORSMiddleware,
