@@ -78,8 +78,8 @@ async def chat_with_agent(message: ChatMessage, db: Session = Depends(get_db)):
             user_message=message.text,
             ai_response=ai_reply
         )
-        #db.add(new_record)
-        #db.commit() # This officially saves it to the cloud!
+        db.add(new_record)
+        db.commit() # This officially saves it to the cloud!
 
         return {
             "reply": ai_reply,
@@ -113,7 +113,9 @@ async def internet_search_tool(request: InternetSearchRequest):
         response = model.generate_content(
             f"Search and define: {user_query}",
             tools=[search_tool],
-            generation_config={"temperature": 0.0}
+            generation_config={"temperature": 0.0,
+                               "max_output_tokens": 300,},
+            
         )
         return InternetSearchResponse(search_result=response.text)
         
