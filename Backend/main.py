@@ -5,8 +5,8 @@ import uuid
 import os
 from google.cloud import dialogflowcx_v3 as dialogflow
 from google.api_core.client_options import ClientOptions
-import vertexai
-from vertexai.generative_models import GenerativeModel, Tool, grounding
+from google import genai
+from google.genai.types import GenerateContentConfig, GoogleSearch, Tool
 from pydantic import Field
 from fastapi.openapi.utils import get_openapi
 
@@ -99,9 +99,7 @@ class InternetSearchRequest(BaseModel):
 class InternetSearchResponse(BaseModel):
     search_result: str = Field(..., description="The summary of the internet search results.")
 
-vertexai.init(project="copilot-493106", location="us-central1")
-search_tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
-model = GenerativeModel("gemini-2.5-flash")
+client = genai.Client()
 
 # Create the Tool Endpoint
 @app.post("/api/tool/search", response_model=InternetSearchResponse, summary="Internet Search Tool", description="Searches the internet for general accounting definitions when the internal manual does not contain the answer.")
@@ -110,13 +108,20 @@ def internet_search_tool(request: InternetSearchRequest):
     
     try:
         print(f"Playbook requested internet search for: {user_query}")
-        response = model.generate_content(
-            f"Provide a one-sentence summary for: {user_query}",
-            tools=[search_tool],
-            generation_config={"temperature": 0.0,
-                               "max_output_tokens": 200,
-                               "top_p": 1},
-            
+        
+        
+        response = client.models.generate_content(
+            model="gemini-2.5-flash", 
+            contents=f"Strictly one sentence definition for: {user_query}",
+            config=GenerateContentConfig(
+                temperature=0.0,
+                max_output_tokens=150,
+                tools=[
+                    Tool(
+                        google_search=GoogleSearch()
+                    )
+                ]
+            )
         )
         return InternetSearchResponse(search_result=response.text)
         
