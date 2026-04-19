@@ -36,7 +36,7 @@ function App() {
       // ==========================================
       // STEP 2: The Logic Fork
       // ==========================================
-      if (chatData.reply === '[TRIGGER_DEEP_SEARCH]') {
+      if (chatData.reply.includes ('[TRIGGER_DEEP_SEARCH]')) {
         
         // Dialogflow failed to find it in the Data Store.
         // Create a temporary bot message to show we are pivoting to a deep search.
