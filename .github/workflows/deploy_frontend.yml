@@ -37,3 +37,5 @@ jobs:
         path: 'website/dist'        # <--- NEW: Tells the robot where the compiled files are now located
         destination: 'copilot_website'
         parent: false
+        headers: |-
+          cache-control: no-store, no-cache, must-revalidate, max-age=0
